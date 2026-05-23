@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Byte Bazaar Project Guide</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 18mm;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            color: #222;
+            line-height: 1.55;
+            font-size: 12.5px;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #0f4f49;
+            line-height: 1.2;
+        }
+
+        h1 {
+            font-size: 30px;
+            margin-bottom: 6px;
+        }
+
+        h2 {
+            font-size: 21px;
+            margin-top: 28px;
+            border-bottom: 1px solid #b7d8d2;
+            padding-bottom: 5px;
+        }
+
+        h3 {
+            font-size: 16px;
+            margin-top: 18px;
+        }
+
+        code,
+        pre {
+            font-family: Consolas, "Courier New", monospace;
+        }
+
+        pre {
+            background: #f3f6f6;
+            border: 1px solid #d8e5e3;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-wrap: break-word;
+            white-space: pre-wrap;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0 16px;
+        }
+
+        th,
+        td {
+            border: 1px solid #d9e2e1;
+            padding: 7px;
+            vertical-align: top;
+        }
+
+        th {
+            background: #edf7f5;
+            text-align: left;
+        }
+
+        .subtitle {
+            color: #555;
+            font-size: 15px;
+            margin-bottom: 26px;
+        }
+
+        .note {
+            background: #fff8dc;
+            border-left: 4px solid #d9a400;
+            padding: 10px 12px;
+            margin: 12px 0;
+        }
+
+        .page-break {
+            break-before: page;
+        }
+    </style>
+</head>
+<body>
+<h1>Byte Bazaar Project Guide</h1>
+<p class="subtitle">A simple explanation of the full project, with extra frontend and AngularJS notes.</p>
+
+<h2>1. Project Overview</h2>
+<p>
+    Byte Bazaar is a small electronics shopping website. It is made as a simple full-stack project using Spring Boot
+    for the backend and AngularJS with HTML/CSS for the frontend.
+</p>
+<p>
+    The main idea is simple: users can register, login, see products, add products to cart, place an order, and view
+    previous orders. The project uses H2 database by default, so it runs without installing MySQL. MySQL support is also
+    present through a separate Spring profile.
+</p>
+
+<h3>Main Features</h3>
+<ul>
+    <li>User registration and login.</li>
+    <li>Product catalog with search and category filter.</li>
+    <li>Cart add, update, and remove options.</li>
+    <li>Checkout that creates an order and reduces stock.</li>
+    <li>Order history for logged-in users.</li>
+</ul>
+
+<h2>2. Technology Used</h2>
+<table>
+    <tr>
+        <th>Part</th>
+        <th>Technology</th>
+        <th>Use</th>
+    </tr>
+    <tr>
+        <td>Backend</td>
+        <td>Java, Spring Boot</td>
+        <td>Runs API endpoints and business logic.</td>
+    </tr>
+    <tr>
+        <td>Database</td>
+        <td>H2 / MySQL</td>
+        <td>Stores users, products, cart items, tokens, and orders.</td>
+    </tr>
+    <tr>
+        <td>Frontend</td>
+        <td>HTML, CSS, AngularJS</td>
+        <td>Shows pages and calls backend APIs.</td>
+    </tr>
+    <tr>
+        <td>Build Tool</td>
+        <td>Gradle</td>
+        <td>Runs, builds, and tests the project.</td>
+    </tr>
+</table>
+
+<h2>3. Folder Structure</h2>
+<pre>ByteBazaar
+|-- build.gradle
+|-- README.md
+|-- docs
+|   |-- ByteBazaar_Project_Guide.html
+|   |-- ByteBazaar_Project_Guide.pdf
+|-- src
+|   |-- main
+|   |   |-- java/org/varun/bytebazaar
+|   |   |   |-- auth
+|   |   |   |-- cart
+|   |   |   |-- catalog
+|   |   |   |-- common
+|   |   |   |-- config
+|   |   |   |-- orders
+|   |   |   |-- users
+|   |   |-- resources
+|   |       |-- static
+|   |       |   |-- index.html
+|   |       |   |-- styles.css
+|   |       |   |-- app.js
+|   |       |-- application.properties
+|   |       |-- application-mysql.properties
+|   |-- test</pre>
+
+<h2>4. Backend Explanation</h2>
+<p>
+    The backend is split into packages based on project features. This keeps the code easier to understand.
+</p>
+
+<h3>auth package</h3>
+<p>
+    This package handles registration, login, logout, and current-user API. When a user logs in, the backend creates a
+    simple token and saves it in the database. The frontend sends this token in the Authorization header for protected
+    APIs.
+</p>
+
+<h3>users package</h3>
+<p>
+    This package has the user entity, role enum, and repository. User data like name, email, password hash, and role is
+    stored here.
+</p>
+
+<h3>catalog package</h3>
+<p>
+    This package has product entity, repository, and product controller. Product APIs are public, so users can view
+    products without login.
+</p>
+
+<h3>cart package</h3>
+<p>
+    This package handles cart APIs. Cart items are connected to a user and a product. The service checks product stock
+    before adding or updating cart quantity.
+</p>
+
+<h3>orders package</h3>
+<p>
+    This package handles checkout and order history. During checkout, the cart is converted into an order. Product
+    details are copied into order items so the order history remains correct even if product data changes later.
+</p>
+
+<h3>config package</h3>
+<p>
+    This package contains security setup, token filter, and data seeding. The data seeder inserts demo products and a
+    demo user when the database is empty.
+</p>
+
+<h2>5. How Request Flow Works</h2>
+<p>Example: adding a product to cart.</p>
+<ol>
+    <li>User clicks <code>Add to cart</code> button in frontend.</li>
+    <li><code>app.js</code> sends <code>POST /api/cart</code> request with product id and quantity.</li>
+    <li>Token is sent in <code>Authorization</code> header.</li>
+    <li><code>TokenAuthenticationFilter</code> checks token and finds logged-in user.</li>
+    <li><code>CartController</code> receives request.</li>
+    <li><code>CartService</code> checks product and stock, then saves cart item.</li>
+    <li>Backend returns updated cart.</li>
+    <li>Frontend updates cart count and total.</li>
+</ol>
+
+<h2>6. How to Run the Project</h2>
+<pre>.\gradlew.bat bootRun</pre>
+<p>Open this URL in browser:</p>
+<pre>http://localhost:8080</pre>
+<p>Demo login:</p>
+<pre>Email: customer@bytebazaar.dev
+Password: password</pre>
+
+<div class="page-break"></div>
+
+<h2>7. Frontend Files</h2>
+<p>The frontend is inside:</p>
+<pre>src/main/resources/static</pre>
+<table>
+    <tr>
+        <th>File</th>
+        <th>Purpose</th>
+    </tr>
+    <tr>
+        <td><code>index.html</code></td>
+        <td>Main page structure. Contains sections for catalog, account, cart, and orders.</td>
+    </tr>
+    <tr>
+        <td><code>styles.css</code></td>
+        <td>Controls layout, colors, spacing, cards, buttons, and mobile view.</td>
+    </tr>
+    <tr>
+        <td><code>app.js</code></td>
+        <td>AngularJS code. Stores frontend data and calls backend APIs.</td>
+    </tr>
+</table>
+
+<h2>8. AngularJS Basic Idea</h2>
+<p>
+    AngularJS is a JavaScript framework that connects HTML with JavaScript data. In normal HTML, if data changes in
+    JavaScript, we manually update the page using DOM methods. In AngularJS, we connect HTML elements to JavaScript
+    variables using special attributes like <code>ng-model</code>, <code>ng-click</code>, <code>ng-repeat</code>, and
+    <code>ng-show</code>.
+</p>
+<p>
+    In this project, AngularJS is used only for simple work: showing data, handling button clicks, forms, and API calls.
+    There is no complex frontend architecture.
+</p>
+
+<h3>AngularJS App Start</h3>
+<pre>&lt;html lang="en" ng-app="byteBazaarApp"&gt;</pre>
+<p>
+    <code>ng-app</code> tells AngularJS that this HTML page belongs to the app named
+    <code>byteBazaarApp</code>. The same name is used in <code>app.js</code>:
+</p>
+<pre>angular.module('byteBazaarApp', [])</pre>
+
+<h3>Controller</h3>
+<pre>&lt;body ng-controller="StoreController as store"&gt;</pre>
+<p>
+    The controller is the JavaScript part that controls the page. Here, <code>StoreController</code> is used as
+    <code>store</code> in HTML. That is why the HTML has code like:
+</p>
+<pre>store.products
+store.cart
+store.show('cart')
+store.login()</pre>
+
+<h2>9. AngularJS Directives Used</h2>
+<table>
+    <tr>
+        <th>Directive</th>
+        <th>Meaning</th>
+        <th>Example in Project</th>
+    </tr>
+    <tr>
+        <td><code>ng-app</code></td>
+        <td>Starts AngularJS app on the page.</td>
+        <td><code>ng-app="byteBazaarApp"</code></td>
+    </tr>
+    <tr>
+        <td><code>ng-controller</code></td>
+        <td>Connects a controller to HTML.</td>
+        <td><code>StoreController as store</code></td>
+    </tr>
+    <tr>
+        <td><code>ng-click</code></td>
+        <td>Runs a JavaScript function when clicked.</td>
+        <td><code>ng-click="store.addToCart(product)"</code></td>
+    </tr>
+    <tr>
+        <td><code>ng-model</code></td>
+        <td>Connects input value to JavaScript variable.</td>
+        <td><code>ng-model="store.search"</code></td>
+    </tr>
+    <tr>
+        <td><code>ng-repeat</code></td>
+        <td>Loops over an array and repeats HTML.</td>
+        <td><code>ng-repeat="product in store.products"</code></td>
+    </tr>
+    <tr>
+        <td><code>ng-if</code></td>
+        <td>Adds/removes HTML based on condition.</td>
+        <td><code>ng-if="store.user"</code></td>
+    </tr>
+    <tr>
+        <td><code>ng-show</code></td>
+        <td>Shows/hides HTML based on condition.</td>
+        <td><code>ng-show="store.view === 'catalog'"</code></td>
+    </tr>
+    <tr>
+        <td><code>ng-submit</code></td>
+        <td>Runs function when form is submitted.</td>
+        <td><code>ng-submit="store.login()"</code></td>
+    </tr>
+</table>
+
+<h2>10. Understanding index.html</h2>
+<h3>Header</h3>
+<p>
+    The header contains the site name and navigation buttons. Buttons do not move to separate pages. Instead, they call
+    <code>store.show(...)</code> and change <code>store.view</code>.
+</p>
+<pre>&lt;button ng-click="store.show('catalog')"&gt;Catalog&lt;/button&gt;
+&lt;button ng-click="store.show('cart')"&gt;Cart&lt;/button&gt;</pre>
+
+<h3>Messages</h3>
+<p>
+    Success and error messages are shown using <code>ng-if</code>. If <code>store.message</code> is empty, the success
+    box is not shown.
+</p>
+<pre>&lt;section class="notice" ng-if="store.message"&gt;{{store.message}}&lt;/section&gt;</pre>
+
+<h3>Catalog</h3>
+<p>
+    The catalog uses <code>ng-repeat</code> to show every product. The filter calls <code>store.productFilter</code> so
+    search and category selection work.
+</p>
+<pre>&lt;article ng-repeat="product in store.products | filter:store.productFilter"&gt;</pre>
+
+<h3>Forms</h3>
+<p>
+    Login and register forms use <code>ng-model</code>. This means when the user types in an input, AngularJS stores
+    that value inside JavaScript object like <code>store.loginForm.email</code>.
+</p>
+<pre>&lt;input type="email" ng-model="store.loginForm.email"&gt;</pre>
+
+<h2>11. Understanding app.js</h2>
+<p>
+    <code>app.js</code> is the main frontend logic file. It stores page data and defines functions used by buttons and
+    forms.
+</p>
+
+<h3>View Model</h3>
+<pre>var vm = this;</pre>
+<p>
+    <code>vm</code> means view model. It is a common AngularJS style. Anything added to <code>vm</code> can be used in
+    HTML through <code>store</code>.
+</p>
+
+<h3>Page State</h3>
+<pre>vm.view = 'catalog';
+vm.products = [];
+vm.cart = {items: [], total: 0};</pre>
+<p>
+    These variables store the current screen and data. When values change, AngularJS updates the HTML automatically.
+</p>
+
+<h3>API Calls With $http</h3>
+<p>
+    <code>$http</code> is AngularJS service for calling backend APIs. Example:
+</p>
+<pre>$http.get('/api/products').then(function (response) {
+    vm.products = response.data;
+});</pre>
+<p>
+    Here, frontend calls <code>/api/products</code>. When backend sends response, product data is stored in
+    <code>vm.products</code>. The catalog updates automatically.
+</p>
+
+<h3>Local Storage</h3>
+<p>
+    <code>localStorage</code> is browser storage. This project stores token and user data there, so refreshing the page
+    does not immediately log the user out.
+</p>
+<pre>localStorage.setItem('byteBazaarToken', vm.token);
+localStorage.getItem('byteBazaarToken');</pre>
+
+<h2>12. Understanding styles.css</h2>
+<p>
+    CSS controls how the frontend looks. This project uses simple CSS without Bootstrap or Tailwind.
+</p>
+
+<h3>Grid Layout</h3>
+<pre>.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+}</pre>
+<p>
+    This creates product cards in columns. <code>auto-fit</code> adjusts the number of columns based on screen width.
+    <code>minmax(250px, 1fr)</code> means each card should be at least 250px wide, and available space is shared.
+</p>
+
+<h3>Flex Layout</h3>
+<pre>.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}</pre>
+<p>
+    Flexbox is used for simple row layouts like header and price/stock rows.
+</p>
+
+<h3>Media Query</h3>
+<pre>@media (max-width: 760px) {
+    .topbar,
+    .toolbar,
+    .auth-panel,
+    .line-item {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+}</pre>
+<p>
+    This makes the layout mobile-friendly. When screen width is below 760px, sections are stacked vertically.
+</p>
+
+<h2>13. Frontend Flow Examples</h2>
+<h3>Login Flow</h3>
+<ol>
+    <li>User enters email and password.</li>
+    <li>Form calls <code>store.login()</code>.</li>
+    <li><code>app.js</code> sends <code>POST /api/auth/login</code>.</li>
+    <li>Backend returns token and user details.</li>
+    <li>Frontend saves token in <code>localStorage</code>.</li>
+    <li>Frontend adds token to future API headers.</li>
+</ol>
+
+<h3>Add to Cart Flow</h3>
+<ol>
+    <li>User clicks Add to cart.</li>
+    <li>Button calls <code>store.addToCart(product)</code>.</li>
+    <li>Frontend sends product id and quantity to backend.</li>
+    <li>Backend returns updated cart.</li>
+    <li>Frontend replaces old cart data with new cart data.</li>
+</ol>
+
+<h3>Checkout Flow</h3>
+<ol>
+    <li>User enters shipping address.</li>
+    <li>Form calls <code>store.checkout()</code>.</li>
+    <li>Backend creates order from cart.</li>
+    <li>Backend clears cart and reduces stock.</li>
+    <li>Frontend clears cart on screen and opens orders view.</li>
+</ol>
+
+<h2>14. Important API Endpoints</h2>
+<table>
+    <tr>
+        <th>Endpoint</th>
+        <th>Use</th>
+    </tr>
+    <tr>
+        <td><code>POST /api/auth/register</code></td>
+        <td>Create new user.</td>
+    </tr>
+    <tr>
+        <td><code>POST /api/auth/login</code></td>
+        <td>Login and get token.</td>
+    </tr>
+    <tr>
+        <td><code>GET /api/products</code></td>
+        <td>Get products for catalog.</td>
+    </tr>
+    <tr>
+        <td><code>GET /api/cart</code></td>
+        <td>Get logged-in user's cart.</td>
+    </tr>
+    <tr>
+        <td><code>POST /api/cart</code></td>
+        <td>Add product to cart.</td>
+    </tr>
+    <tr>
+        <td><code>PATCH /api/cart/{itemId}</code></td>
+        <td>Update cart item quantity.</td>
+    </tr>
+    <tr>
+        <td><code>DELETE /api/cart/{itemId}</code></td>
+        <td>Remove cart item.</td>
+    </tr>
+    <tr>
+        <td><code>POST /api/orders</code></td>
+        <td>Place order.</td>
+    </tr>
+    <tr>
+        <td><code>GET /api/orders</code></td>
+        <td>View previous orders.</td>
+    </tr>
+</table>
+
+<h2>15. How I Made/Simplified It</h2>
+<p>
+    The project was kept simple so it looks like a realistic college-level full-stack project. The backend was divided
+    feature-wise instead of creating very complex architecture. The token login was simplified using a database-stored
+    UUID token. The UI was made with plain HTML, CSS, and AngularJS instead of using a large frontend framework.
+</p>
+<p>
+    Product data was also changed to simple real-world names and short descriptions. The README was rewritten in plain
+    language. Later, comments were added in frontend and important backend classes so the code is easier to explain.
+</p>
+
+<h2>16. What to Study First</h2>
+<ol>
+    <li>Open <code>index.html</code> and understand the screens.</li>
+    <li>Open <code>app.js</code> and match each button/form with its function.</li>
+    <li>Open <code>styles.css</code> and see how classes from HTML are styled.</li>
+    <li>Then study backend controllers, because controller methods match API calls from frontend.</li>
+    <li>After controllers, study services because actual business logic is inside services.</li>
+</ol>
+
+<div class="note">
+    Tip: For frontend understanding, do not start by memorizing AngularJS. First match HTML attributes like
+    <code>ng-click</code> and <code>ng-model</code> with functions and variables in <code>app.js</code>. That will make
+    the project easier to understand.
+</div>
+</body>
+</html>
