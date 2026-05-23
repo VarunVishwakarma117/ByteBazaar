@@ -16,6 +16,7 @@ import org.varun.bytebazaar.users.UserAccount;
 
 @Component
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
+    // Runs before protected APIs to identify user from token.
     private final AuthService authService;
 
     public TokenAuthenticationFilter(AuthService authService) {
@@ -25,8 +26,10 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+        // Read Authorization header from request.
         String authorization = request.getHeader("Authorization");
         if (authorization != null && authorization.startsWith("Bearer ")) {
+            // Find user for token and set it in Spring Security context.
             UserAccount user = authService.authenticate(authorization.substring(7));
             if (user != null) {
                 var authorities = List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));

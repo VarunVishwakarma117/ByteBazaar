@@ -13,6 +13,7 @@ import org.varun.bytebazaar.users.UserAccount;
 
 @Service
 public class CartService {
+    // Contains cart business logic like add, update, remove, and total calculation.
     private final CartItemRepository cartItems;
     private final ProductRepository products;
 
@@ -23,9 +24,12 @@ public class CartService {
 
     @Transactional(readOnly = true)
     public CartResponse getCart(UserAccount user) {
+        // Convert database cart rows into response objects.
         List<CartItemResponse> items = cartItems.findByUserOrderByIdAsc(user).stream()
                 .map(CartItemResponse::from)
                 .toList();
+
+        // Add all item subtotals to get cart total.
         BigDecimal total = items.stream()
                 .map(CartItemResponse::subtotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -34,9 +38,12 @@ public class CartService {
 
     @Transactional
     public CartResponse add(UserAccount user, AddToCartRequest request) {
+        // Product must exist and be active before adding to cart.
         Product product = products.findById(request.productId())
                 .filter(Product::isActive)
                 .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+
+        // Use existing cart item if product is already in cart, otherwise create one.
         CartItem item = cartItems.findByUserAndProductId(user, request.productId()).orElseGet(() -> {
             CartItem created = new CartItem();
             created.setUser(user);
@@ -44,6 +51,8 @@ public class CartService {
             created.setQuantity(0);
             return created;
         });
+
+        // Increase quantity and check stock limit.
         int nextQuantity = item.getQuantity() + request.quantity();
         ensureInStock(product, nextQuantity);
         item.setQuantity(nextQuantity);
@@ -53,6 +62,7 @@ public class CartService {
 
     @Transactional
     public CartResponse update(UserAccount user, Long itemId, int quantity) {
+        // User can update only his/her own cart item.
         CartItem item = cartItems.findById(itemId)
                 .filter(cartItem -> cartItem.getUser().getId().equals(user.getId()))
                 .orElseThrow(() -> new IllegalArgumentException("Cart item not found"));
@@ -63,6 +73,7 @@ public class CartService {
 
     @Transactional
     public CartResponse remove(UserAccount user, Long itemId) {
+        // User can remove only his/her own cart item.
         CartItem item = cartItems.findById(itemId)
                 .filter(cartItem -> cartItem.getUser().getId().equals(user.getId()))
                 .orElseThrow(() -> new IllegalArgumentException("Cart item not found"));
@@ -71,6 +82,7 @@ public class CartService {
     }
 
     private void ensureInStock(Product product, int quantity) {
+        // Prevent cart quantity from going above available stock.
         if (quantity > product.getStock()) {
             throw new IllegalArgumentException("Only " + product.getStock() + " units available for " + product.getName());
         }

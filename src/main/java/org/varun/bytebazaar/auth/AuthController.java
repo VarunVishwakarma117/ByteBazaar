@@ -17,6 +17,7 @@ import org.varun.bytebazaar.users.UserAccount;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+    // Handles login, registration, logout, and current user APIs.
     private final AuthService authService;
 
     public AuthController(AuthService authService) {
@@ -25,25 +26,30 @@ public class AuthController {
 
     @PostMapping("/register")
     AuthResponse register(@Valid @RequestBody RegisterRequest request) {
+        // Creates a new user and returns login token.
         return authService.register(request);
     }
 
     @PostMapping("/login")
     AuthResponse login(@Valid @RequestBody LoginRequest request) {
+        // Checks email/password and returns login token.
         return authService.login(request);
     }
 
     @PostMapping("/logout")
     void logout(@RequestHeader(name = "Authorization", required = false) String authorization) {
+        // Removes token so it cannot be used again.
         authService.logout(extractBearer(authorization));
     }
 
     @GetMapping("/me")
     UserResponse me(@AuthenticationPrincipal UserAccount user) {
+        // Returns logged-in user details.
         return UserResponse.from(user);
     }
 
     private String extractBearer(String authorization) {
+        // Reads token from "Authorization: Bearer <token>" header.
         if (authorization == null || !authorization.startsWith("Bearer ")) {
             return null;
         }

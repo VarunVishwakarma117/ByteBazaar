@@ -18,6 +18,7 @@ import org.varun.bytebazaar.users.UserAccount;
 @RestController
 @RequestMapping("/api/cart")
 public class CartController {
+    // Receives cart API requests and sends them to CartService.
     private final CartService cartService;
 
     public CartController(CartService cartService) {
@@ -26,22 +27,26 @@ public class CartController {
 
     @GetMapping
     CartResponse getCart(@AuthenticationPrincipal UserAccount user) {
+        // Returns current user's cart.
         return cartService.getCart(user);
     }
 
     @PostMapping
     CartResponse add(@AuthenticationPrincipal UserAccount user, @Valid @RequestBody AddToCartRequest request) {
+        // Adds selected product to cart.
         return cartService.add(user, request);
     }
 
     @PatchMapping("/{itemId}")
     CartResponse update(@AuthenticationPrincipal UserAccount user, @PathVariable Long itemId,
             @Valid @RequestBody UpdateCartItemRequest request) {
+        // Updates quantity of cart item.
         return cartService.update(user, itemId, request.quantity());
     }
 
     @DeleteMapping("/{itemId}")
     CartResponse remove(@AuthenticationPrincipal UserAccount user, @PathVariable Long itemId) {
+        // Removes item from cart.
         return cartService.remove(user, itemId);
     }
 }

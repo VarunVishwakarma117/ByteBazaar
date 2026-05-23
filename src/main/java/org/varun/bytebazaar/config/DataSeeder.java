@@ -14,9 +14,11 @@ import org.varun.bytebazaar.users.UserRepository;
 
 @Configuration
 public class DataSeeder {
+    // Adds demo products and demo user when database is empty.
     @Bean
     CommandLineRunner seedData(ProductRepository products, UserRepository users, PasswordEncoder passwordEncoder) {
         return args -> {
+            // Add sample products only once.
             if (products.count() == 0) {
                 products.saveAll(List.of(
                         product("HP Pavilion Laptop", "HP", "Laptops",
@@ -40,6 +42,7 @@ public class DataSeeder {
                 ));
             }
 
+            // Add one demo customer for easy testing.
             if (!users.existsByEmailIgnoreCase("customer@bytebazaar.dev")) {
                 UserAccount user = new UserAccount();
                 user.setName("Demo Customer");
@@ -53,6 +56,7 @@ public class DataSeeder {
 
     private Product product(String name, String brand, String category, String description, String price, int stock,
             String imageUrl) {
+        // Helper method to create product object neatly.
         Product product = new Product();
         product.setName(name);
         product.setBrand(brand);

@@ -1,15 +1,25 @@
 <!doctype html>
+<!-- Main AngularJS page for Byte Bazaar. -->
 <html lang="en" ng-app="byteBazaarApp">
 <head>
+    <!-- Basic browser setup. -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Byte Bazaar</title>
+
+    <!-- Local CSS file for page styling. -->
     <link rel="stylesheet" href="/styles.css">
+
+    <!-- AngularJS library used for binding data and handling UI actions. -->
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular.min.js"></script>
 </head>
+<!-- StoreController controls all buttons, forms, and data shown on this page. -->
 <body ng-controller="StoreController as store">
+<!-- Header contains project name and navigation buttons. -->
 <header class="topbar">
     <h1>Byte Bazaar</h1>
+
+    <!-- Navigation changes the value of store.view in app.js. -->
     <nav class="nav-actions">
         <button ng-class="{active: store.view === 'catalog'}" ng-click="store.show('catalog')">Catalog</button>
         <button ng-class="{active: store.view === 'cart'}" ng-click="store.show('cart')">
@@ -22,9 +32,11 @@
 </header>
 
 <main>
+    <!-- Success and error messages are shown only when their values exist. -->
     <section class="notice" ng-if="store.message">{{store.message}}</section>
     <section class="notice error" ng-if="store.error">{{store.error}}</section>
 
+    <!-- Search and category controls for product filtering. -->
     <section class="toolbar">
         <label>
             Search
@@ -39,6 +51,7 @@
         <div class="session" ng-if="store.user">Signed in as <strong>{{store.user.name}}</strong></div>
     </section>
 
+    <!-- Catalog screen: loops over products and applies the search/category filter. -->
     <section ng-show="store.view === 'catalog'" class="product-grid">
         <article class="product-card" ng-repeat="product in store.products | filter:store.productFilter">
             <img ng-src="{{product.imageUrl}}" alt="{{product.name}}">
@@ -57,6 +70,7 @@
         </article>
     </section>
 
+    <!-- Account screen: contains login and registration forms. -->
     <section ng-show="store.view === 'account'" class="panel auth-panel">
         <div>
             <h2>Sign in</h2>
@@ -78,6 +92,7 @@
         </div>
     </section>
 
+    <!-- Cart screen: shows cart items, total amount, and checkout form. -->
     <section ng-show="store.view === 'cart'" class="panel">
         <div class="panel-heading">
             <h2>Shopping Cart</h2>
@@ -100,6 +115,7 @@
         </form>
     </section>
 
+    <!-- Orders screen: shows previous orders of logged-in user. -->
     <section ng-show="store.view === 'orders'" class="panel">
         <div class="panel-heading">
             <h2>Orders</h2>
@@ -124,6 +140,7 @@
     </section>
 </main>
 
+<!-- Local AngularJS app code. -->
 <script src="/app.js"></script>
 </body>
 </html>

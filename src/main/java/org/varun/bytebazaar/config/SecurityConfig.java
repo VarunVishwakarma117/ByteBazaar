@@ -15,6 +15,7 @@ import org.varun.bytebazaar.users.UserRepository;
 
 @Configuration
 public class SecurityConfig {
+    // Defines which URLs are public and which URLs need login.
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http, TokenAuthenticationFilter tokenFilter) throws Exception {
         return http
@@ -31,11 +32,13 @@ public class SecurityConfig {
 
     @Bean
     PasswordEncoder passwordEncoder() {
+        // BCrypt stores passwords in hashed form.
         return new BCryptPasswordEncoder();
     }
 
     @Bean
     UserDetailsService userDetailsService(UserRepository users) {
+        // Lets Spring Security load user details by email.
         return username -> users.findByEmailIgnoreCase(username)
                 .map(user -> org.springframework.security.core.userdetails.User
                         .withUsername(user.getEmail())

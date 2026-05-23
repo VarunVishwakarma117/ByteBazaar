@@ -14,6 +14,7 @@ import org.varun.bytebazaar.users.UserRepository;
 
 @Service
 public class AuthService {
+    // Contains main authentication logic used by controller and token filter.
     private final UserRepository users;
     private final AuthTokenRepository tokens;
     private final PasswordEncoder passwordEncoder;
@@ -26,9 +27,12 @@ public class AuthService {
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
+        // Do not allow two accounts with same email.
         if (users.existsByEmailIgnoreCase(request.email())) {
             throw new IllegalArgumentException("Email is already registered");
         }
+
+        // Create user account from registration form.
         UserAccount user = new UserAccount();
         user.setName(request.name().trim());
         user.setEmail(request.email().trim().toLowerCase());
@@ -40,6 +44,7 @@ public class AuthService {
 
     @Transactional
     public AuthResponse login(LoginRequest request) {
+        // Find user by email and check password.
         UserAccount user = users.findByEmailIgnoreCase(request.email())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
         if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
@@ -50,6 +55,7 @@ public class AuthService {
 
     @Transactional(readOnly = true)
     public UserAccount authenticate(String rawToken) {
+        // Used by filter to convert token into logged-in user.
         if (rawToken == null || rawToken.isBlank()) {
             return null;
         }
@@ -60,12 +66,14 @@ public class AuthService {
 
     @Transactional
     public void logout(String rawToken) {
+        // Delete token on logout.
         if (rawToken != null && !rawToken.isBlank()) {
             tokens.deleteByToken(rawToken);
         }
     }
 
     private AuthResponse issueToken(UserAccount user) {
+        // Create simple random token and save it in database.
         String rawToken = UUID.randomUUID().toString();
         AuthToken token = new AuthToken();
         token.setToken(rawToken);

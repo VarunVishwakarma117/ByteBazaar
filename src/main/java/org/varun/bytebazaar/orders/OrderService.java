@@ -14,6 +14,7 @@ import org.varun.bytebazaar.users.UserAccount;
 
 @Service
 public class OrderService {
+    // Contains checkout and order history logic.
     private final OrderRepository orders;
     private final CartItemRepository cartItems;
     private final ProductRepository products;
@@ -26,6 +27,7 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public List<OrderResponse> list(UserAccount user) {
+        // Fetch newest orders first for logged-in user.
         return orders.findByUserOrderByCreatedAtDesc(user).stream()
                 .map(OrderResponse::from)
                 .toList();
@@ -33,17 +35,20 @@ public class OrderService {
 
     @Transactional
     public OrderResponse checkout(UserAccount user, CheckoutRequest request) {
+        // Get current cart before creating order.
         List<CartItem> cart = cartItems.findByUserOrderByIdAsc(user);
         if (cart.isEmpty()) {
             throw new IllegalArgumentException("Cart is empty");
         }
 
+        // Create main order object.
         CustomerOrder order = new CustomerOrder();
         order.setUser(user);
         order.setShippingAddress(request.shippingAddress().trim());
 
         BigDecimal total = BigDecimal.ZERO;
         for (CartItem cartItem : cart) {
+            // Check stock and reduce product stock.
             Product product = cartItem.getProduct();
             if (cartItem.getQuantity() > product.getStock()) {
                 throw new IllegalArgumentException("Only " + product.getStock() + " units available for " + product.getName());
@@ -52,6 +57,7 @@ public class OrderService {
             product.setStock(product.getStock() - cartItem.getQuantity());
             products.save(product);
 
+            // Copy cart item details into order item.
             OrderItem item = new OrderItem();
             item.setOrder(order);
             item.setProductId(product.getId());
@@ -64,6 +70,7 @@ public class OrderService {
             total = total.add(item.getSubtotal());
         }
 
+        // Save order, clear cart, and return order response.
         order.setTotalAmount(total);
         CustomerOrder saved = orders.save(order);
         cartItems.deleteByUser(user);

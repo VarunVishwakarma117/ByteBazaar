@@ -1,17 +1,21 @@
+/* Common page colors and font. */
 :root {
     font-family: Arial, Helvetica, sans-serif;
     background: #f5f5f5;
     color: #222;
 }
 
+/* Makes padding and border included in width calculation. */
 * {
     box-sizing: border-box;
 }
 
+/* Removes browser default body spacing. */
 body {
     margin: 0;
 }
 
+/* Keeps form controls using the same font as the page. */
 button,
 input,
 select,
@@ -19,6 +23,7 @@ textarea {
     font: inherit;
 }
 
+/* Basic button design used for all buttons. */
 button {
     border: 1px solid #aaa;
     border-radius: 4px;
@@ -27,6 +32,7 @@ button {
     cursor: pointer;
 }
 
+/* Highlight button on hover, active nav, and primary actions. */
 button:hover,
 button.active,
 button.primary {
@@ -35,15 +41,18 @@ button.primary {
     color: white;
 }
 
+/* Primary buttons fill their form/card width. */
 button.primary {
     width: 100%;
 }
 
+/* Disabled buttons look inactive and cannot be clicked. */
 button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
+/* Header layout with logo on left and buttons on right. */
 .topbar {
     display: flex;
     justify-content: space-between;
@@ -54,6 +63,7 @@ button:disabled {
     border-bottom: 1px solid #ddd;
 }
 
+/* Removes extra top margin from common text tags. */
 h1,
 h2,
 h3,
@@ -61,22 +71,26 @@ p {
     margin-top: 0;
 }
 
+/* Keeps site heading aligned nicely in header. */
 h1 {
     margin-bottom: 0;
 }
 
+/* Navigation buttons stay in one row and wrap if screen is small. */
 .nav-actions {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
 }
 
+/* Main content is centered and does not become too wide. */
 main {
     max-width: 1100px;
     margin: 24px auto;
     padding: 0 16px;
 }
 
+/* Green success message box. */
 .notice {
     padding: 10px 12px;
     margin-bottom: 16px;
@@ -84,12 +98,14 @@ main {
     background: #e8fff9;
 }
 
+/* Red error message box. */
 .notice.error {
     border-color: #ffb4b4;
     background: #fff0f0;
     color: #b00020;
 }
 
+/* Search, category, and session text row. */
 .toolbar {
     display: grid;
     grid-template-columns: 2fr 1fr auto;
@@ -98,11 +114,13 @@ main {
     margin-bottom: 18px;
 }
 
+/* Labels stack text above input/select controls. */
 label {
     display: grid;
     gap: 5px;
 }
 
+/* Common style for text boxes, dropdown, and address area. */
 input,
 select,
 textarea {
@@ -113,20 +131,24 @@ textarea {
     background: white;
 }
 
+/* Gives address textarea enough height. */
 textarea {
     min-height: 85px;
 }
 
+/* Aligns signed-in text with inputs. */
 .session {
     padding-bottom: 8px;
 }
 
+/* Product cards are shown in a responsive grid. */
 .product-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 16px;
 }
 
+/* Shared white box style for cards and panels. */
 .product-card,
 .panel,
 .order-card {
@@ -135,16 +157,19 @@ textarea {
     border-radius: 4px;
 }
 
+/* Product image size inside product cards. */
 .product-card img {
     width: 100%;
     height: 180px;
     object-fit: cover;
 }
 
+/* Space inside each product card below the image. */
 .product-body {
     padding: 14px;
 }
 
+/* Muted text color for secondary information. */
 .product-body span,
 .product-body p,
 .line-item p,
@@ -153,6 +178,7 @@ textarea {
     color: #666;
 }
 
+/* Places price/stock and headings/totals on opposite sides. */
 .product-footer,
 .panel-heading {
     display: flex;
@@ -160,21 +186,25 @@ textarea {
     gap: 12px;
 }
 
+/* Adds inside spacing to main panels. */
 .panel {
     padding: 16px;
 }
 
+/* Login and register forms are side by side on desktop. */
 .auth-panel {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 24px;
 }
 
+/* Forms keep their inputs and buttons in a vertical stack. */
 form {
     display: grid;
     gap: 10px;
 }
 
+/* Cart item row layout: image, details, quantity, price, action. */
 .line-item {
     display: grid;
     grid-template-columns: 70px 1fr 80px 110px auto;
@@ -184,33 +214,39 @@ form {
     border-top: 1px solid #eee;
 }
 
+/* Cart item image size. */
 .line-item img {
     width: 70px;
     height: 70px;
     object-fit: cover;
 }
 
+/* Checkout form is separated from cart list. */
 .checkout {
     border-top: 1px solid #eee;
     padding-top: 12px;
 }
 
+/* Empty cart/order message. */
 .empty {
     padding: 24px 0;
     color: #666;
     text-align: center;
 }
 
+/* Each order box spacing. */
 .order-card {
     padding: 14px;
     margin-top: 12px;
 }
 
+/* Separates shipping address from order heading. */
 .address {
     border-top: 1px solid #eee;
     padding-top: 10px;
 }
 
+/* Mobile layout stacks larger sections vertically. */
 @media (max-width: 760px) {
     .topbar,
     .toolbar,

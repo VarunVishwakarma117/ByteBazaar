@@ -15,6 +15,7 @@ import org.varun.bytebazaar.users.UserAccount;
 @RestController
 @RequestMapping("/api/orders")
 public class OrderController {
+    // Handles order list and checkout API requests.
     private final OrderService orderService;
 
     public OrderController(OrderService orderService) {
@@ -23,11 +24,13 @@ public class OrderController {
 
     @GetMapping
     List<OrderResponse> list(@AuthenticationPrincipal UserAccount user) {
+        // Returns orders placed by current user.
         return orderService.list(user);
     }
 
     @PostMapping
     OrderResponse checkout(@AuthenticationPrincipal UserAccount user, @Valid @RequestBody CheckoutRequest request) {
+        // Converts cart into a new order.
         return orderService.checkout(user, request);
     }
 }
