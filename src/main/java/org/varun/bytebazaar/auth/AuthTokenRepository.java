@@ -4,7 +4,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AuthTokenRepository extends JpaRepository<AuthToken, Long> {
-    Optional<AuthToken> findByTokenHash(String tokenHash);
+    Optional<AuthToken> findByToken(String token);
 
-    void deleteByTokenHash(String tokenHash);
+    void deleteByToken(String token);
 }

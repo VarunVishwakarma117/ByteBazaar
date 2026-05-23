@@ -1,12 +1,6 @@
 package org.varun.bytebazaar.auth;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Base64;
+import java.util.UUID;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +17,6 @@ public class AuthService {
     private final UserRepository users;
     private final AuthTokenRepository tokens;
     private final PasswordEncoder passwordEncoder;
-    private final SecureRandom secureRandom = new SecureRandom();
 
     public AuthService(UserRepository users, AuthTokenRepository tokens, PasswordEncoder passwordEncoder) {
         this.users = users;
@@ -60,8 +53,7 @@ public class AuthService {
         if (rawToken == null || rawToken.isBlank()) {
             return null;
         }
-        return tokens.findByTokenHash(hash(rawToken))
-                .filter(token -> token.getExpiresAt().isAfter(Instant.now()))
+        return tokens.findByToken(rawToken)
                 .map(AuthToken::getUser)
                 .orElse(null);
     }
@@ -69,36 +61,16 @@ public class AuthService {
     @Transactional
     public void logout(String rawToken) {
         if (rawToken != null && !rawToken.isBlank()) {
-            tokens.deleteByTokenHash(hash(rawToken));
+            tokens.deleteByToken(rawToken);
         }
     }
 
     private AuthResponse issueToken(UserAccount user) {
-        String rawToken = newToken();
+        String rawToken = UUID.randomUUID().toString();
         AuthToken token = new AuthToken();
-        token.setTokenHash(hash(rawToken));
+        token.setToken(rawToken);
         token.setUser(user);
-        token.setExpiresAt(Instant.now().plus(7, ChronoUnit.DAYS));
         tokens.save(token);
         return new AuthResponse(rawToken, UserResponse.from(user));
-    }
-
-    private String newToken() {
-        byte[] bytes = new byte[32];
-        secureRandom.nextBytes(bytes);
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
-    }
-
-    private String hash(String token) {
-        try {
-            byte[] digest = MessageDigest.getInstance("SHA-256").digest(token.getBytes(StandardCharsets.UTF_8));
-            StringBuilder builder = new StringBuilder(digest.length * 2);
-            for (byte value : digest) {
-                builder.append(String.format("%02x", value));
-            }
-            return builder.toString();
-        } catch (NoSuchAlgorithmException ex) {
-            throw new IllegalStateException("SHA-256 is unavailable", ex);
-        }
     }
 }

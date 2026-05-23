@@ -9,7 +9,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.time.Instant;
 import org.varun.bytebazaar.users.UserAccount;
 
 @Entity
@@ -19,26 +18,23 @@ public class AuthToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 64)
-    private String tokenHash;
+    @Column(nullable = false, unique = true)
+    private String token;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "user_id")
     private UserAccount user;
 
-    @Column(nullable = false)
-    private Instant expiresAt;
-
     public Long getId() {
         return id;
     }
 
-    public String getTokenHash() {
-        return tokenHash;
+    public String getToken() {
+        return token;
     }
 
-    public void setTokenHash(String tokenHash) {
-        this.tokenHash = tokenHash;
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public UserAccount getUser() {
@@ -49,11 +45,4 @@ public class AuthToken {
         this.user = user;
     }
 
-    public Instant getExpiresAt() {
-        return expiresAt;
-    }
-
-    public void setExpiresAt(Instant expiresAt) {
-        this.expiresAt = expiresAt;
-    }
 }
