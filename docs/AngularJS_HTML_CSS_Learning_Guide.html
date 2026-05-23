@@ -1,0 +1,559 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>AngularJS, HTML and CSS Learning Guide</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 18mm;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            color: #222;
+            line-height: 1.55;
+            font-size: 12.5px;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #0f4f49;
+            line-height: 1.2;
+        }
+
+        h1 {
+            font-size: 29px;
+            margin-bottom: 6px;
+        }
+
+        h2 {
+            font-size: 21px;
+            margin-top: 28px;
+            border-bottom: 1px solid #b7d8d2;
+            padding-bottom: 5px;
+        }
+
+        h3 {
+            font-size: 16px;
+            margin-top: 18px;
+        }
+
+        code,
+        pre {
+            font-family: Consolas, "Courier New", monospace;
+        }
+
+        pre {
+            background: #f3f6f6;
+            border: 1px solid #d8e5e3;
+            padding: 10px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            overflow-wrap: break-word;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0 16px;
+        }
+
+        th,
+        td {
+            border: 1px solid #d9e2e1;
+            padding: 7px;
+            vertical-align: top;
+        }
+
+        th {
+            background: #edf7f5;
+            text-align: left;
+        }
+
+        .subtitle {
+            color: #555;
+            font-size: 15px;
+            margin-bottom: 26px;
+        }
+
+        .note {
+            background: #fff8dc;
+            border-left: 4px solid #d9a400;
+            padding: 10px 12px;
+            margin: 12px 0;
+        }
+
+        .page-break {
+            break-before: page;
+        }
+    </style>
+</head>
+<body>
+<h1>AngularJS, HTML and CSS Learning Guide</h1>
+<p class="subtitle">A separate frontend guide based on the Byte Bazaar project.</p>
+
+<h2>1. What This Guide Covers</h2>
+<p>
+    This guide is for understanding the frontend part of Byte Bazaar. It assumes you already know basic HTML and CSS,
+    but you are new to AngularJS. The guide explains the AngularJS concepts used in the project and the HTML/CSS layout
+    techniques used to build the page.
+</p>
+<p>
+    The frontend files are:
+</p>
+<pre>src/main/resources/static/index.html
+src/main/resources/static/styles.css
+src/main/resources/static/app.js</pre>
+
+<h2>2. How Frontend Works in This Project</h2>
+<p>
+    The frontend is a single page. It does not use separate pages for catalog, login, cart, and orders. Instead, all
+    sections are present in <code>index.html</code>, and AngularJS shows or hides sections based on
+    <code>store.view</code>.
+</p>
+<pre>store.view = 'catalog';</pre>
+<p>
+    If <code>store.view</code> is <code>catalog</code>, the catalog section is visible. If it is <code>cart</code>, the
+    cart section is visible.
+</p>
+
+<h2>3. AngularJS in Simple Words</h2>
+<p>
+    AngularJS connects HTML with JavaScript data. In plain JavaScript, you normally select elements and manually change
+    them. In AngularJS, the HTML directly reads values from JavaScript variables.
+</p>
+<p>
+    Example idea:
+</p>
+<pre>// JavaScript data
+store.user = { name: 'Varun' };
+
+// HTML output
+Signed in as {{store.user.name}}</pre>
+<p>
+    AngularJS automatically prints the value in the page.
+</p>
+
+<h2>4. AngularJS Application Setup</h2>
+<h3>HTML Side</h3>
+<pre>&lt;html lang="en" ng-app="byteBazaarApp"&gt;</pre>
+<p>
+    <code>ng-app</code> starts AngularJS for this page. The name <code>byteBazaarApp</code> must match the app name in
+    JavaScript.
+</p>
+
+<h3>JavaScript Side</h3>
+<pre>angular.module('byteBazaarApp', [])</pre>
+<p>
+    This creates the AngularJS module. The empty array means this app has no extra AngularJS dependencies.
+</p>
+
+<h2>5. AngularJS Controller</h2>
+<h3>HTML Side</h3>
+<pre>&lt;body ng-controller="StoreController as store"&gt;</pre>
+<p>
+    This connects the HTML body to <code>StoreController</code>. The controller is used as <code>store</code> inside
+    HTML.
+</p>
+
+<h3>JavaScript Side</h3>
+<pre>.controller('StoreController', function ($http, $timeout) {
+    var vm = this;
+});</pre>
+<p>
+    <code>$http</code> is used for API calls. <code>$timeout</code> is used for clearing messages after a few seconds.
+    <code>var vm = this</code> stores the controller object in a variable.
+</p>
+
+<div class="note">
+    In this project, <code>vm</code> in JavaScript is the same object that HTML calls <code>store</code>.
+</div>
+
+<h2>6. Data Binding</h2>
+<p>
+    Data binding means connecting frontend data with HTML. AngularJS updates the page when JavaScript values change.
+</p>
+
+<h3>One-Way Display Binding</h3>
+<pre>{{store.message}}</pre>
+<p>
+    This prints the value of <code>store.message</code> in HTML.
+</p>
+
+<h3>Two-Way Form Binding</h3>
+<pre>&lt;input type="email" ng-model="store.loginForm.email"&gt;</pre>
+<p>
+    <code>ng-model</code> connects the input box and JavaScript variable. When the user types, the JavaScript value
+    changes. If JavaScript changes the value, the input also updates.
+</p>
+
+<h2>7. Directives Used in Byte Bazaar</h2>
+<table>
+    <tr>
+        <th>Directive</th>
+        <th>Purpose</th>
+        <th>Project Example</th>
+    </tr>
+    <tr>
+        <td><code>ng-app</code></td>
+        <td>Starts AngularJS app.</td>
+        <td><code>ng-app="byteBazaarApp"</code></td>
+    </tr>
+    <tr>
+        <td><code>ng-controller</code></td>
+        <td>Connects JavaScript controller with HTML.</td>
+        <td><code>ng-controller="StoreController as store"</code></td>
+    </tr>
+    <tr>
+        <td><code>ng-click</code></td>
+        <td>Runs function on button click.</td>
+        <td><code>ng-click="store.show('cart')"</code></td>
+    </tr>
+    <tr>
+        <td><code>ng-model</code></td>
+        <td>Connects form input with JavaScript variable.</td>
+        <td><code>ng-model="store.search"</code></td>
+    </tr>
+    <tr>
+        <td><code>ng-repeat</code></td>
+        <td>Repeats HTML for each item in an array.</td>
+        <td><code>ng-repeat="product in store.products"</code></td>
+    </tr>
+    <tr>
+        <td><code>ng-if</code></td>
+        <td>Adds/removes HTML based on condition.</td>
+        <td><code>ng-if="store.user"</code></td>
+    </tr>
+    <tr>
+        <td><code>ng-show</code></td>
+        <td>Shows/hides HTML based on condition.</td>
+        <td><code>ng-show="store.view === 'catalog'"</code></td>
+    </tr>
+    <tr>
+        <td><code>ng-submit</code></td>
+        <td>Runs function when form is submitted.</td>
+        <td><code>ng-submit="store.login()"</code></td>
+    </tr>
+    <tr>
+        <td><code>ng-disabled</code></td>
+        <td>Disables button based on condition.</td>
+        <td><code>ng-disabled="!product.stock"</code></td>
+    </tr>
+    <tr>
+        <td><code>ng-class</code></td>
+        <td>Adds class dynamically.</td>
+        <td><code>ng-class="{active: store.view === 'catalog'}"</code></td>
+    </tr>
+</table>
+
+<h2>8. Understanding ng-repeat</h2>
+<p>
+    <code>ng-repeat</code> is used when you have a list. In Byte Bazaar, products come from the backend as an array.
+    AngularJS creates one product card for every product.
+</p>
+<pre>&lt;article class="product-card"
+         ng-repeat="product in store.products | filter:store.productFilter"&gt;
+    &lt;h2&gt;{{product.name}}&lt;/h2&gt;
+&lt;/article&gt;</pre>
+<p>
+    Here, <code>product</code> is a temporary variable for one item from <code>store.products</code>.
+</p>
+
+<h2>9. Understanding Filters</h2>
+<p>
+    AngularJS filters change or limit displayed data. This project uses:
+</p>
+<pre>store.products | filter:store.productFilter</pre>
+<p>
+    This means AngularJS will call <code>store.productFilter(product)</code> for each product. If the function returns
+    <code>true</code>, the product is shown. If it returns <code>false</code>, the product is hidden.
+</p>
+
+<h2>10. API Calls With $http</h2>
+<p>
+    <code>$http</code> is AngularJS service for calling backend APIs.
+</p>
+<pre>$http.get('/api/products').then(function (response) {
+    vm.products = response.data;
+});</pre>
+<p>
+    The meaning is:
+</p>
+<ol>
+    <li>Call backend endpoint <code>/api/products</code>.</li>
+    <li>Wait for response.</li>
+    <li>Store response data in <code>vm.products</code>.</li>
+    <li>AngularJS updates product cards automatically.</li>
+</ol>
+
+<h3>POST Example</h3>
+<pre>$http.post('/api/auth/login', vm.loginForm)</pre>
+<p>
+    This sends login form data to backend. The body contains email and password.
+</p>
+
+<h3>PATCH Example</h3>
+<pre>$http.patch('/api/cart/' + item.id, {quantity: item.quantity})</pre>
+<p>
+    This updates only the quantity of a cart item.
+</p>
+
+<h3>DELETE Example</h3>
+<pre>$http.delete('/api/cart/' + item.id)</pre>
+<p>
+    This removes one cart item.
+</p>
+
+<h2>11. Authentication Token in Frontend</h2>
+<p>
+    After login, backend returns a token. The frontend saves it in browser storage:
+</p>
+<pre>localStorage.setItem('byteBazaarToken', vm.token);</pre>
+<p>
+    Then it sends this token with future API calls:
+</p>
+<pre>$http.defaults.headers.common.Authorization = 'Bearer ' + vm.token;</pre>
+<p>
+    This is why cart and orders APIs know which user is logged in.
+</p>
+
+<div class="page-break"></div>
+
+<h2>12. HTML Structure Used in the Project</h2>
+<p>
+    The HTML uses semantic tags where possible:
+</p>
+<table>
+    <tr>
+        <th>Tag</th>
+        <th>Meaning</th>
+        <th>Used For</th>
+    </tr>
+    <tr>
+        <td><code>&lt;header&gt;</code></td>
+        <td>Top section of page.</td>
+        <td>Project title and navigation.</td>
+    </tr>
+    <tr>
+        <td><code>&lt;nav&gt;</code></td>
+        <td>Navigation area.</td>
+        <td>Catalog, cart, orders, login/logout buttons.</td>
+    </tr>
+    <tr>
+        <td><code>&lt;main&gt;</code></td>
+        <td>Main content area.</td>
+        <td>All visible app screens.</td>
+    </tr>
+    <tr>
+        <td><code>&lt;section&gt;</code></td>
+        <td>Separate content block.</td>
+        <td>Catalog, account, cart, orders.</td>
+    </tr>
+    <tr>
+        <td><code>&lt;article&gt;</code></td>
+        <td>One independent item.</td>
+        <td>Product card, cart item, order card.</td>
+    </tr>
+    <tr>
+        <td><code>&lt;form&gt;</code></td>
+        <td>User input form.</td>
+        <td>Login, register, checkout.</td>
+    </tr>
+</table>
+
+<h2>13. Advanced HTML Concepts Used</h2>
+<h3>Required Form Inputs</h3>
+<pre>&lt;input type="email" required&gt;</pre>
+<p>
+    <code>required</code> tells browser that input cannot be empty before form submit.
+</p>
+
+<h3>Email Input</h3>
+<pre>&lt;input type="email"&gt;</pre>
+<p>
+    Browser checks that the entered value looks like an email.
+</p>
+
+<h3>Number Input With Minimum Value</h3>
+<pre>&lt;input type="number" min="1"&gt;</pre>
+<p>
+    Used for cart quantity. It stops user from selecting values below 1 from browser controls.
+</p>
+
+<h3>Dynamic Image Source</h3>
+<pre>&lt;img ng-src="{{product.imageUrl}}" alt="{{product.name}}"&gt;</pre>
+<p>
+    <code>ng-src</code> is used instead of normal <code>src</code> because image URL comes from AngularJS data.
+</p>
+
+<h2>14. CSS Box Model</h2>
+<p>
+    The CSS starts with:
+</p>
+<pre>* {
+    box-sizing: border-box;
+}</pre>
+<p>
+    Normally, width does not include padding and border. With <code>border-box</code>, width includes content, padding,
+    and border. This makes layouts easier to control.
+</p>
+
+<h2>15. CSS Flexbox Used</h2>
+<p>
+    Flexbox is used for simple row alignment.
+</p>
+<pre>.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}</pre>
+<table>
+    <tr>
+        <th>Property</th>
+        <th>Meaning</th>
+    </tr>
+    <tr>
+        <td><code>display: flex</code></td>
+        <td>Places children in a row by default.</td>
+    </tr>
+    <tr>
+        <td><code>justify-content: space-between</code></td>
+        <td>Moves first item to left and last item to right.</td>
+    </tr>
+    <tr>
+        <td><code>align-items: center</code></td>
+        <td>Vertically centers items.</td>
+    </tr>
+    <tr>
+        <td><code>gap</code></td>
+        <td>Adds space between child elements.</td>
+    </tr>
+</table>
+
+<h2>16. CSS Grid Used</h2>
+<p>
+    Grid is used for product cards, toolbar, login/register forms, and cart rows.
+</p>
+<pre>.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+}</pre>
+<p>
+    This line is important:
+</p>
+<pre>repeat(auto-fit, minmax(250px, 1fr))</pre>
+<p>
+    It means: create as many columns as possible. Each column should be minimum 250px and can grow to take remaining
+    space.
+</p>
+
+<h3>Cart Row Grid</h3>
+<pre>.line-item {
+    display: grid;
+    grid-template-columns: 70px 1fr 80px 110px auto;
+}</pre>
+<p>
+    This creates columns for image, product details, quantity input, subtotal, and remove button.
+</p>
+
+<h2>17. Responsive Design</h2>
+<p>
+    Responsive design means the page should work on mobile and desktop. This project uses a media query:
+</p>
+<pre>@media (max-width: 760px) {
+    .topbar,
+    .toolbar,
+    .auth-panel,
+    .line-item {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+}</pre>
+<p>
+    When screen width is less than 760px, these layouts become single-column. This makes them easier to read on phone
+    screens.
+</p>
+
+<h2>18. CSS Selectors Used</h2>
+<table>
+    <tr>
+        <th>Selector</th>
+        <th>Meaning</th>
+    </tr>
+    <tr>
+        <td><code>button</code></td>
+        <td>Selects all button elements.</td>
+    </tr>
+    <tr>
+        <td><code>.topbar</code></td>
+        <td>Selects elements with class <code>topbar</code>.</td>
+    </tr>
+    <tr>
+        <td><code>button:hover</code></td>
+        <td>Selects button when mouse is over it.</td>
+    </tr>
+    <tr>
+        <td><code>button.primary</code></td>
+        <td>Selects buttons that also have class <code>primary</code>.</td>
+    </tr>
+    <tr>
+        <td><code>.product-card img</code></td>
+        <td>Selects images inside product cards only.</td>
+    </tr>
+</table>
+
+<h2>19. Complete Frontend Flow</h2>
+<h3>Product Page Load</h3>
+<ol>
+    <li>Browser opens <code>index.html</code>.</li>
+    <li>AngularJS library loads from CDN.</li>
+    <li><code>app.js</code> creates Angular app and controller.</li>
+    <li><code>vm.loadProducts()</code> calls backend.</li>
+    <li>Products are stored in <code>vm.products</code>.</li>
+    <li><code>ng-repeat</code> displays product cards.</li>
+</ol>
+
+<h3>Search Product</h3>
+<ol>
+    <li>User types in search input.</li>
+    <li><code>ng-model="store.search"</code> updates JavaScript value.</li>
+    <li>AngularJS runs product filter again.</li>
+    <li>Only matching products remain visible.</li>
+</ol>
+
+<h3>Open Cart</h3>
+<ol>
+    <li>User clicks Cart button.</li>
+    <li><code>ng-click</code> calls <code>store.show('cart')</code>.</li>
+    <li>If user is not logged in, account screen opens.</li>
+    <li>If logged in, cart API is called.</li>
+    <li>Cart items are shown using <code>ng-repeat</code>.</li>
+</ol>
+
+<h2>20. Common Mistakes to Avoid</h2>
+<ul>
+    <li>Do not change <code>ng-app</code> name unless you also change it in <code>app.js</code>.</li>
+    <li>Do not use <code>src="{{product.imageUrl}}"</code>; use <code>ng-src</code> for AngularJS images.</li>
+    <li>Do not forget to include AngularJS before <code>app.js</code>.</li>
+    <li>Do not call cart/order APIs without token.</li>
+    <li>Do not remove <code>ng-model</code> from form inputs, or AngularJS will not receive typed values.</li>
+</ul>
+
+<h2>21. Study Order for This Frontend</h2>
+<ol>
+    <li>Read <code>index.html</code> and find all <code>ng-</code> attributes.</li>
+    <li>Open <code>app.js</code> and find matching functions.</li>
+    <li>Open browser and test each button.</li>
+    <li>Study <code>$http.get</code>, <code>$http.post</code>, <code>$http.patch</code>, and <code>$http.delete</code>.</li>
+    <li>Then study CSS grid and flexbox layout in <code>styles.css</code>.</li>
+</ol>
+
+<div class="note">
+    Best way to learn this project: keep <code>index.html</code> and <code>app.js</code> open side by side. For every
+    button in HTML, find the function it calls in JavaScript.
+</div>
+</body>
+</html>
