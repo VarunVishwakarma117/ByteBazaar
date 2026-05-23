@@ -19,23 +19,23 @@ public class DataSeeder {
         return args -> {
             if (products.count() == 0) {
                 products.saveAll(List.of(
-                        product("PixelForge Pro 15", "ByteWorks", "Laptops",
-                                "Creator laptop with a 15-inch OLED display, Ryzen 9 class performance, 32GB RAM, and 1TB SSD.",
+                        product("HP Pavilion Laptop", "HP", "Laptops",
+                                "15 inch laptop with 16GB RAM and 512GB SSD.",
                                 "129999.00", 8, "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=900&q=80"),
-                        product("AeroBook Air 13", "Nimbus", "Laptops",
-                                "Ultra-light notebook with all-day battery life, backlit keyboard, and fast USB-C charging.",
+                        product("Lenovo Slim Laptop", "Lenovo", "Laptops",
+                                "Lightweight laptop for study and office work.",
                                 "84999.00", 14, "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=900&q=80"),
-                        product("Nova X1 5G", "Orion", "Mobiles",
-                                "Flagship 5G phone with a 120Hz AMOLED screen, triple camera system, and 256GB storage.",
+                        product("Samsung Galaxy Phone", "Samsung", "Mobiles",
+                                "5G phone with AMOLED display and 256GB storage.",
                                 "64999.00", 25, "https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=900&q=80"),
-                        product("PulseBuds ANC", "SoundArc", "Audio",
-                                "Wireless earbuds with adaptive noise cancellation, low-latency gaming mode, and 32-hour case battery.",
+                        product("Wireless Earbuds", "Boat", "Audio",
+                                "Bluetooth earbuds with charging case.",
                                 "7999.00", 40, "https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?auto=format&fit=crop&w=900&q=80"),
-                        product("DeskView 27 4K", "ViewNest", "Monitors",
-                                "Color-accurate 27-inch 4K IPS monitor with USB-C display input and height adjustable stand.",
+                        product("Dell 27 inch Monitor", "Dell", "Monitors",
+                                "27 inch monitor for coding and daily use.",
                                 "32999.00", 12, "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&w=900&q=80"),
-                        product("KeySwift Mechanical", "Tactile Labs", "Accessories",
-                                "Hot-swappable mechanical keyboard with compact layout, PBT caps, and white backlighting.",
+                        product("Mechanical Keyboard", "Redragon", "Accessories",
+                                "Wired mechanical keyboard with backlight.",
                                 "5999.00", 30, "https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=900&q=80")
                 ));
             }
